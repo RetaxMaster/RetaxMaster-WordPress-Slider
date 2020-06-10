@@ -1,7 +1,7 @@
 <?php
 
 /*
-Plugin Name: RetaxMaster Custom Post Types
+Plugin Name: RetaxMaster Slider
 Description: Plugin para registrar nuevos tipos de post
 Version: 1.0
 Author: RetaxMaster
@@ -132,6 +132,34 @@ function rm_slider_taxonomy() {
 
 }
 
+function insert_index_top() {
+	$taxonomy = 'rm_slider_position';
+	
+	$terms = array (
+		'0' => array (
+			'name'          => 'Slider del index',
+			'slug'          => 'index-top',
+			'description'   => 'Slider de la página principal',
+		)
+	);  
+
+	foreach ($terms as $term) {
+
+		if (term_exists($term["name"], $taxonomy) == null) {
+			wp_insert_term(
+				$term['name'],
+				$taxonomy, 
+				array(
+					'description'   => $term['description'],
+					'slug'          => $term['slug'],
+				)
+			);
+		}
+
+		unset( $term ); 
+	}
+}
+
 // Guarda el slide
 function rm_save_slide($post_id) {
 
@@ -221,5 +249,6 @@ add_action('add_meta_boxes', 'rm_register_custom_fields', 1);
 add_action('init', 'rm_slider_taxonomy', 2);
 add_action('save_post', 'rm_save_slide');
 add_shortcode('slider', 'rm_add_shortcode' );
+add_action( 'init', 'insert_index_top' );
 
 ?>
