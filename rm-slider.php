@@ -70,24 +70,29 @@ function rm_slider_post_type() {
 // Crea los inputs personalizados para rellenar el texto del slider
 function rm_register_custom_fields($post) {
 
-    $screens = ['rm_slider'];
-    $values = get_post_custom($post->ID);
-    $firstTitle = isset( $values['first-title'] ) ? esc_attr($values['first-title'][0]) : "";
-    $secondTitle = isset( $values['second-title'] ) ? esc_attr($values['second-title'][0]) : "";
+	/* echo "<pre>";
+	var_dump($post); //<- FIXME: Trying to get property of a non object pero por alguna razón si funciona
+	echo "</pre>"; */
 
-    add_meta_box("slide_text", "Texto a mostrar en los slides", function() use ($firstTitle, $secondTitle) {
-        
-        wp_nonce_field('send_slider_info', 'rm_metabox_nonce' ); ?>
-        <div class="row" style="display: flex;justify-content: center;align-items: center;text-align: center;margin-bottom: 10px;">
-            <label for="first-title" class="col-6" style="width: 50%; font-weight: bold;">Primer texto</label>
-            <input type="text" name="first-title" id="first-title" class="col-6" style="width: 50%;" value="<?= esc_html($firstTitle) ?>">
-        </div>
-        <div class="row" style="display: flex;justify-content: center;align-items: center;text-align: center;">
-            <label for="second-title" class="col-6" style="width: 50%; font-weight: bold;">Segundo texto</label>
-            <input type="text" name="second-title" id="second-title" class="col-6" style="width: 50%;" value="<?= esc_html($secondTitle) ?>">
-        </div>
+	$screens = ['rm_slider'];
+	$values = get_post_custom($post->ID);
+	$firstTitle = isset( $values['first-title'] ) ? esc_attr($values['first-title'][0]) : "";
+	$secondTitle = isset( $values['second-title'] ) ? esc_attr($values['second-title'][0]) : "";
 
-    <?php }, $screens);
+	add_meta_box("slide_text", "Texto a mostrar en los slides", function() use ($firstTitle, $secondTitle) {
+		
+		wp_nonce_field('send_slider_info', 'rm_metabox_nonce' ); ?>
+		<div class="row" style="display: flex;justify-content: center;align-items: center;text-align: center;margin-bottom: 10px;">
+			<label for="first-title" class="col-6" style="width: 50%; font-weight: bold;">Primer texto</label>
+			<input type="text" name="first-title" id="first-title" class="col-6" style="width: 50%;" value="<?= esc_html($firstTitle) ?>">
+		</div>
+		<div class="row" style="display: flex;justify-content: center;align-items: center;text-align: center;">
+			<label for="second-title" class="col-6" style="width: 50%; font-weight: bold;">Segundo texto</label>
+			<input type="text" name="second-title" id="second-title" class="col-6" style="width: 50%;" value="<?= esc_html($secondTitle) ?>">
+		</div>
+
+	<?php }, $screens);
+
     
 }
 
@@ -132,6 +137,7 @@ function rm_slider_taxonomy() {
 
 }
 
+// Inserta la taxonomía por defecto para la localización de index_top
 function insert_index_top() {
 	$taxonomy = 'rm_slider_position';
 	
@@ -164,17 +170,17 @@ function insert_index_top() {
 function rm_save_slide($post_id) {
 
     // Ignoramos los auto guardados.
-    if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
         return;
     }
 
     // Si no está el nonce declarado antes o no podemos verificarlo no seguimos.
-    if ( ! isset( $_POST['rm_metabox_nonce'] ) || ! wp_verify_nonce( $_POST['rm_metabox_nonce'], 'send_slider_info' ) ) {
+    if (!isset( $_POST['rm_metabox_nonce']) || !wp_verify_nonce($_POST['rm_metabox_nonce'], 'send_slider_info')) {
         return;
     }
 
     // Si el usuario actual no puede editar entradas no debería estar aquí.
-    if ( ! current_user_can( 'edit_post' ) ) {
+    if (!current_user_can('edit_posts')) {
         return;
     }
 
@@ -248,7 +254,7 @@ add_action('init', 'rm_slider_post_type', 0);
 add_action('add_meta_boxes', 'rm_register_custom_fields', 1);
 add_action('init', 'rm_slider_taxonomy', 2);
 add_action('save_post', 'rm_save_slide');
-add_shortcode('slider', 'rm_add_shortcode' );
-add_action( 'init', 'insert_index_top' );
+add_shortcode('slider', 'rm_add_shortcode');
+add_action('init', 'insert_index_top');
 
 ?>
