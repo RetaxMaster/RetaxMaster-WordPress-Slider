@@ -70,12 +70,8 @@ function rm_slider_post_type() {
 // Crea los inputs personalizados para rellenar el texto del slider
 function rm_register_custom_fields($post) {
 
-	/* echo "<pre>";
-	var_dump($post); //<- FIXME: Trying to get property of a non object pero por alguna razón si funciona
-	echo "</pre>"; */
-
 	$screens = ['rm_slider'];
-	$values = get_post_custom($post->ID);
+	$values = get_post_custom();
 	$firstTitle = isset( $values['first-title'] ) ? esc_attr($values['first-title'][0]) : "";
 	$secondTitle = isset( $values['second-title'] ) ? esc_attr($values['second-title'][0]) : "";
 
